@@ -6,13 +6,14 @@
 #    By: mdchane <mdchane@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/10 08:36:51 by mdchane           #+#    #+#              #
-#    Updated: 2018/11/22 14:18:43 by mdchane          ###   ########.fr        #
+#    Updated: 2018/11/24 11:19:58 by mdchane          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = fillit
 
-SRCS = *.c
+SRCS = *.c\
+	libft/*.c
 
 OBJS = $(SRCS:.c=.o)
 
