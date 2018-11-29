@@ -5,33 +5,28 @@
 #                                                     +:+ +:+         +:+      #
 #    By: mdchane <mdchane@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2018/11/10 08:36:51 by mdchane           #+#    #+#              #
-#    Updated: 2018/11/24 11:19:58 by mdchane          ###   ########.fr        #
+#    Created: 2018/11/06 11:59:51 by apaulaus          #+#    #+#              #
+#    Updated: 2018/11/29 16:00:39 by mdchane          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = fillit
-
-SRCS = *.c\
-	libft/*.c
-
-OBJS = $(SRCS:.c=.o)
-
-HEADERS = .
-
-FLAGS = -Wall -Werror -Wextra
+NAME=fillit
+SRCS=main.c v2.c grid.c input.c result.c algorithm.c
+OBJS=$(SRCS:%.c=%.o)
 
 all: $(NAME)
 
 $(NAME):
-	gcc $(FLAGS) -c $(SRCS) -I $(HEADERS)
-	gcc -o $(NAME) $(OBJS)
+	make -C libft/
+	gcc -Wall -Wextra -Werror -I includes/ -I libft/includes/ -c $(SRCS)
+	gcc -o $(NAME) $(OBJS) -L libft/ -lft
 
 clean:
-	/bin/rm -f $(OBJS)
+	make -C libft/ clean
+	rm -f *.o
 
 fclean: clean
-	/bin/rm -f $(NAME)
+	make -C libft/ fclean
+	rm -f $(NAME)
 
 re: fclean all
-
