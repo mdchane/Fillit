@@ -3,18 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   result.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdchane <mdchane@student.42.fr>            +#+  +:+       +#+        */
+/*   By: apaulaus <apaulaus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/18 17:03:44 by apaulaus          #+#    #+#             */
-/*   Updated: 2018/11/29 11:48:42 by mdchane          ###   ########.fr       */
+/*   Updated: 2018/12/05 08:18:07 by apaulaus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-void	error(void)
+void	error(t_read_context *context, char *line, int tet_in_list)
 {
 	print_string("error\n");
+	if (context->fd > -1)
+		close(context->fd);
+	else
+		exit(0);
+	if (context->head)
+		list_delete(&(context->head), &free_tet);
+	if (context->tet && !tet_in_list)
+		free_tet(context->tet, 0);
+	if (line)
+		string_delete(&line);
 	exit(0);
 }
 

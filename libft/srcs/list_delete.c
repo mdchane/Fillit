@@ -6,7 +6,7 @@
 /*   By: apaulaus <apaulaus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/08 12:42:10 by apaulaus          #+#    #+#             */
-/*   Updated: 2018/11/14 14:34:19 by apaulaus         ###   ########.fr       */
+/*   Updated: 2018/12/05 08:05:40 by apaulaus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	list_delete(t_list **alst, void (*del)(void *, size_t))
 {
-	if (!alst || !del)
+	if (!alst || !del || !*alst)
 		return ;
 	if ((*alst)->next)
 		list_delete(&(*alst)->next, del);

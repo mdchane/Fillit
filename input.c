@@ -3,25 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdchane <mdchane@student.42.fr>            +#+  +:+       +#+        */
+/*   By: apaulaus <apaulaus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/18 17:05:45 by apaulaus          #+#    #+#             */
-/*   Updated: 2018/11/27 10:56:40 by mdchane          ###   ########.fr       */
+/*   Updated: 2018/12/05 12:54:18 by apaulaus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-void		push_node(t_list **head, t_tetromino *tet)
+void		push_node(t_read_context *context)
 {
 	t_list *node;
 
 	node = list_new(NULL, 0);
-	node->content = tet;
-	if (!*head)
-		*head = node;
+	node->content = context->tet;
+	if (!context->head)
+		context->head = node;
 	else
-		list_push_back(head, node);
+		list_push_back(&context->head, node);
 }
 
 int			check_tetromino(t_tetromino *tet)
@@ -50,75 +50,74 @@ int			check_tetromino(t_tetromino *tet)
 	return (max_touch > 1);
 }
 
-void		read_line(int fd, int y, t_v2 *pivot, t_tetromino *tet)
+void		read_line(int y, t_v2 *pivot, t_read_context *context)
 {
 	char	*line;
 	int		read_result;
 	int		x;
 
-	read_result = get_next_line(fd, &line);
+	read_result = get_next_line(context->fd, &line);
 	if (!read_result || string_length(line) != 4)
-		error();
+		error(context, read_result ? line : NULL, 0);
 	x = -1;
 	while (++x < 4)
 	{
 		if (line[x] == '#')
 		{
-			if (tet->piece_count > 3)
-				error();
-			if (tet->piece_count == 0)
+			if (context->tet->piece_count > 3)
+				error(context, line, 0);
+			if (context->tet->piece_count == 0)
 				*pivot = v2(x, y);
-			tet->pieces[tet->piece_count++] = sub(v2(x, y), *pivot);
+			context->tet->pieces[context->tet->piece_count++] =
+				sub(v2(x, y), *pivot);
 		}
 		else if (line[x] != '.')
-			error();
+			error(context, line, 0);
 	}
 	free(line);
 }
 
-t_tetromino	*read_tetromino(int fd)
+void		read_tetromino(t_read_context *context)
 {
-	t_tetromino	*tet;
 	t_v2		pivot;
 	int			y;
 
-	tet = (t_tetromino *)malloc(sizeof(t_tetromino));
-	tet->piece_count = 0;
+	if (!(context->tet = (t_tetromino *)malloc(sizeof(t_tetromino))))
+		error(context, NULL, 0);
+	context->tet->piece_count = 0;
 	y = -1;
 	while (++y < 4)
-	{
-		read_line(fd, y, &pivot, tet);
-	}
-	if (tet->piece_count != 4 || !check_tetromino(tet))
-		error();
-	return (tet);
+		read_line(y, &pivot, context);
+	if (context->tet->piece_count != 4 || !check_tetromino(context->tet))
+		error(context, NULL, 0);
+	push_node(context);
 }
 
 t_list		*read_tetrominoes(char *filename)
 {
-	int			fd;
-	t_list		*head;
-	char		*line;
-	int			read_result;
-	t_tetromino	*tet;
+	char			*line;
+	int				read_result;
+	t_read_context	context;
 
-	head = NULL;
-	fd = open(filename, O_RDONLY);
+	context.tet_count = 0;
+	context.head = NULL;
+	if ((context.fd = open(filename, O_RDONLY)) < 0)
+		error(&context, NULL, 0);
 	while (1)
 	{
-		tet = read_tetromino(fd);
-		push_node(&head, tet);
-		if ((read_result = get_next_line(fd, &line)))
+		read_tetromino(&context);
+		context.tet_count++;
+		if (context.tet_count > 26)
+			error(&context, NULL, 1);
+		if ((read_result = get_next_line(context.fd, &line)))
 		{
 			if (string_length(line) != 0)
-			{
-				free(line);
-				error();
-			}
+				error(&context, line, 1);
+			free(line);
 		}
 		else
 			break ;
 	}
-	close(fd);
-	return (head);
+	close(context.fd);
+	return (context.head);
 }

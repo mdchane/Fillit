@@ -6,7 +6,7 @@
 /*   By: mdchane <mdchane@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/18 17:13:46 by apaulaus          #+#    #+#             */
-/*   Updated: 2018/11/29 15:39:33 by mdchane          ###   ########.fr       */
+/*   Updated: 2018/12/03 15:42:16 by mdchane          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,12 @@ void	run_algorithm(t_list *head, char **grid, int *size)
 	{
 		if (*grid)
 			free(*grid);
-		*grid = (char *)malloc(sizeof(char) * (*size * *size));
+		if (!(*grid = (char *)malloc(sizeof(char) * (*size * *size))))
+		{
+			print_string("error\n");
+			list_delete(&head, &free_tet);
+			exit(0);
+		}
 		i = -1;
 		while (++i < *size * *size)
 			(*grid)[i] = '.';

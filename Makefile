@@ -6,7 +6,7 @@
 #    By: mdchane <mdchane@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/06 11:59:51 by apaulaus          #+#    #+#              #
-#    Updated: 2018/11/29 16:00:39 by mdchane          ###   ########.fr        #
+#    Updated: 2018/12/04 14:21:07 by mdchane          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,10 +16,12 @@ OBJS=$(SRCS:%.c=%.o)
 
 all: $(NAME)
 
-$(NAME):
+$(NAME): $(OBJS)
 	make -C libft/
-	gcc -Wall -Wextra -Werror -I includes/ -I libft/includes/ -c $(SRCS)
 	gcc -o $(NAME) $(OBJS) -L libft/ -lft
+
+%.o: %.c fillit.h
+	gcc -o $@ -c $< -Wall -Wextra -Werror -I includes/ -I libft/includes/
 
 clean:
 	make -C libft/ clean
